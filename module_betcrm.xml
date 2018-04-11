@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_betcrm" default="compile.module.betcrm">
+  <dirname property="module.betcrm.basedir" file="${ant.file.module_betcrm}"/>
+  
+  <property name="module.jdk.home.betcrm" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.betcrm" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.betcrm" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.betcrm" value="-encoding UTF-8 -source 1.8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="betcrm.output.dir" value="${module.betcrm.basedir}/out/production/BetCrm"/>
+  <property name="betcrm.testoutput.dir" value="${module.betcrm.basedir}/out/test/BetCrm"/>
+  
+  <path id="betcrm.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="betcrm.module.production.classpath">
+    <path refid="${module.jdk.classpath.betcrm}"/>
+  </path>
+  
+  <path id="betcrm.runtime.production.module.classpath">
+    <pathelement location="${betcrm.output.dir}"/>
+  </path>
+  
+  <path id="betcrm.module.classpath">
+    <path refid="${module.jdk.classpath.betcrm}"/>
+    <pathelement location="${betcrm.output.dir}"/>
+  </path>
+  
+  <path id="betcrm.runtime.module.classpath">
+    <pathelement location="${betcrm.testoutput.dir}"/>
+    <pathelement location="${betcrm.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.betcrm">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.betcrm">
+    <patternset refid="excluded.from.module.betcrm"/>
+  </patternset>
+  
+  <path id="betcrm.module.sourcepath">
+    <dirset dir="${module.betcrm.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.betcrm" depends="compile.module.betcrm.production,compile.module.betcrm.tests" description="Compile module BetCrm"/>
+  
+  <target name="compile.module.betcrm.production" depends="register.custom.compilers" description="Compile module BetCrm; production classes">
+    <mkdir dir="${betcrm.output.dir}"/>
+    <javac2 destdir="${betcrm.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.betcrm}/javac">
+      <compilerarg line="${compiler.args.betcrm}"/>
+      <bootclasspath refid="betcrm.module.bootclasspath"/>
+      <classpath refid="betcrm.module.production.classpath"/>
+      <src refid="betcrm.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.betcrm"/>
+    </javac2>
+    
+    <copy todir="${betcrm.output.dir}">
+      <fileset dir="${module.betcrm.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.betcrm.tests" depends="register.custom.compilers,compile.module.betcrm.production" description="compile module BetCrm; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.betcrm" description="cleanup module">
+    <delete dir="${betcrm.output.dir}"/>
+    <delete dir="${betcrm.testoutput.dir}"/>
+  </target>
+</project>
